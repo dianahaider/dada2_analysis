@@ -9,11 +9,15 @@ devtools::install_github("benjjneb/dada2", ref="v1.12")
 library("dada2")
 
 #load ur data
-path<- "~/data/demultiplixed" #path to directory containing all the FASTA/Q files
+path<- "~/qbb2/dada2_analysis/reads/" #path to directory containing all the FASTA/Q files
 list.files(path) #returns list of all files
-fnFs<-sort(list.files(path, pattern="patternforward", full.names = TRUE)) #list all forward
-fnRs<-sort(list.files(path,pattern="patternforRev", full.names = TRUE)) #list all reverse reads
+fnFs<-sort(list.files(path, pattern="*_R1_001.fastq", full.names = TRUE)) #list all forward
+fnRs<-sort(list.files(path,pattern="*_R2_001.fastq", full.names = TRUE)) #list all reverse reads
+length(fnRs) #just checking I have all my 200 samples
+length(fnFs)
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1) #extract sample names
+fnFs[1:2]
+
 
 #view quality profiles
 plotQualityProfile(fnFs[1:2])
@@ -23,10 +27,11 @@ filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
 filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
 names(filtFs) <- sample.names
 names(filtRs) <- sample.names
+View(filtFs)
 
-out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(280,260),
                      maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
-                     compress=TRUE, multithread=TRUE) # On Windows set multithread=FALSE
+                     compress=TRUE, multithread=TRUE, verbose = FALSE) # On Windows set multithread=FALSE
 head(out)
 
 #learn error r8
